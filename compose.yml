@@ -1,0 +1,32 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8006:8006"
+    environment:
+      - DEBUG=True
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=accommodation_booking
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SECRET_KEY=django-insecure-your-secret-key-here
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    command: python manage.py runserver 0.0.0.0:8006
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=accommodation_booking
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: 
