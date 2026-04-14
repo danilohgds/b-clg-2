@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'accommodations',
     'bookings',
+    'voice_notes',
 ]
 
 MIDDLEWARE = [
@@ -125,4 +126,48 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-] 
+]
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# =============================================================================
+# Voice Notes Configuration
+# =============================================================================
+
+# Transcription provider: 'openai', 'local', or 'mock'
+VOICE_NOTE_TRANSCRIPTION_PROVIDER = os.getenv('VOICE_NOTE_PROVIDER', 'openai')
+
+# OpenAI API key (required for 'openai' provider)
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+
+# Local Whisper settings (for 'local' provider)
+# Model sizes: tiny (~75MB), base (~140MB), small (~460MB), medium (~1.5GB), large (~3GB)
+WHISPER_MODEL_SIZE = os.getenv('WHISPER_MODEL_SIZE', 'base')
+WHISPER_DEVICE = os.getenv('WHISPER_DEVICE', 'auto')  # 'auto', 'cpu', 'cuda'
+WHISPER_COMPUTE_TYPE = os.getenv('WHISPER_COMPUTE_TYPE', 'auto')  # 'auto', 'int8', 'float16'
+
+# Processing thresholds
+VOICE_NOTE_SYNC_THRESHOLD_SECONDS = int(os.getenv('VOICE_NOTE_SYNC_THRESHOLD', '30'))
+VOICE_NOTE_MAX_DURATION_SECONDS = int(os.getenv('VOICE_NOTE_MAX_DURATION', '180'))
+VOICE_NOTE_MAX_FILE_SIZE_BYTES = int(os.getenv('VOICE_NOTE_MAX_SIZE', str(25 * 1024 * 1024)))
+
+# Mock transcript for testing
+VOICE_NOTE_MOCK_TRANSCRIPT = os.getenv(
+    'VOICE_NOTE_MOCK_TRANSCRIPT',
+    'This is a mock transcript for testing purposes.'
+)
+
+# =============================================================================
+# Celery Configuration
+# =============================================================================
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 300  # 5 minutes max per task
